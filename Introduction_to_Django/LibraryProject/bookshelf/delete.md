@@ -1,3 +1,6 @@
+# import the Book model
+from bookshelf.models import Book  
+
 # Retrieve the book instance
 book = Book.objects.get(title="Nineteen Eighty-Four")
 
