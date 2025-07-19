@@ -43,7 +43,7 @@ print(Toyo_books)
 
 #List all books in a library.(one way to do it)
 library_name = "El's Safe Heaven"
-EL = Library.objects.get(name =library_name)
+EL = Library.objects.get(name=library_name)
 esh = EL.books.all()
 print(esh)
 #<QuerySet [<Book: Now You Know Me Better>, <Book: Complexities>]>
