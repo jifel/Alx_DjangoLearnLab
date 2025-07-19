@@ -41,17 +41,24 @@ print(Toyo_books)
 # <QuerySet [<Book: Now You Know Me Better>, <Book: Complexities>]>
 
 
-#List all books in a library.
-EL = Library.objects.get(name ="El's Safe Haven")
+#List all books in a library.(one way to do it)
+library_name = "El's Safe Heaven"
+EL = Library.objects.get(name =library_name)
 esh = EL.books.all()
 print(esh)
 #<QuerySet [<Book: Now You Know Me Better>, <Book: Complexities>]>
 
 
+#my way of listing all books in a library
+EL = Library.objects.get(name ="El's Safe Haven")
+esh = EL.books.all()
+print(esh)
+#<QuerySet [<Book: Now You Know Me Better>, <Book: Complexities>]>
 
+#get the Librarian of a library
 EL = Library.objects.get(name ="El's Safe Haven")
 
-lib = EL.librarian
+lib = EL.librarian #librarian term here because i didnt not use related_name
 
 print(lib.name)
 #Phina Adams
