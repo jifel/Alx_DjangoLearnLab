@@ -68,3 +68,9 @@ lib = EL.librarian #librarian term here because i didnt not use related_name
 
 print(lib.name)
 #Phina Adams
+
+#checkerway
+library_name = "El's Safe Haven"
+library = Library.objects.get(name=library_name)
+librarian = Librarian.objects.get(library=library)
+print(librarian)
