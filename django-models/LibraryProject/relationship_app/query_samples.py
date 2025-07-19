@@ -33,7 +33,13 @@ admin2 = Librarian.objects.create(name = "Aseda Dellor", library =library2)
 
 
 #Query all books by a specific author.
+#checkerway
+author_name = "Toyosi Etim-Effiong"
+author = Author.objects.get(name=author_name)
+books = Book.objects.filter(author=author)
+print(books)
 
+#my way
 Toyo_books = Book.objects.filter(author__name ="Toyosi Etim-Effiong")
 print(Toyo_books)
 
