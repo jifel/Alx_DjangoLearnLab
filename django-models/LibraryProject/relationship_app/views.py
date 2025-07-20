@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic.detail import DetailView
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 from .models import Book
 from .models import Library
 
@@ -29,3 +32,9 @@ class LibraryDetailView(DetailView):
         context['books'] = Book.objects.filter(library=library)
         return context
 
+
+#user registration
+class SignUpView(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'relationship_app/register.html'
