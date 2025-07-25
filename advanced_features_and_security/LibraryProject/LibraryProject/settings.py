@@ -102,7 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 #update settings to use custom user model
-AUTH_USER_MODEL = 'bookshelf.Customuser' #app_name.ModelName
+AUTH_USER_MODEL = 'bookshelf.Customuser' 
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
