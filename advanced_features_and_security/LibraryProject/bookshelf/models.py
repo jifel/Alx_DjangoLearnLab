@@ -7,6 +7,18 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
     publication_year = models.IntegerField()
+
+
+    #including custom permissions for this book model
+
+    class Meta:
+        permissions = [
+            ("can_view","Can view list of books"),
+            ("can_create","Can add a book"),
+            ("can_edit","Can edit attributes of a book"),
+            ("can_delete","Can delete books"),
+
+        ]
  
 
 #extending the  user to add more fields
