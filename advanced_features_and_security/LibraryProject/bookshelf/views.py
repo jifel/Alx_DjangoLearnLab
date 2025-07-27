@@ -4,6 +4,7 @@ from .models import Book
 from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404 #retreives an object from the db or returns 404 if not found
 from .forms import BookForm
+from .forms import ExampleForm
 # Create your views here.
 #(can_view)
 
