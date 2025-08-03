@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
+   
+
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')), #this makes api/books/ work
+    #endpoint to allow users to obtain an authentication tokem
+    #users will send a POSt request with their username and password
+    #if valid, the response will include their authentication token
+    path('api/token/', obtain_auth_token, name='api_token_auth'),
 ]

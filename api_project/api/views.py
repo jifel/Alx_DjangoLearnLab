@@ -4,6 +4,8 @@ from .serializers import BookSerializer
 #import generic views from DRF
 from rest_framework import generics
 from rest_framework import viewsets 
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
 
 
 # Create a view that list all books using ListAPIView
@@ -13,8 +15,11 @@ class BookList(generics.ListAPIView):
     serializer_class = BookSerializer #how to serialize the data
 
     
-#extending to use a viewset as well
+#ModelViewSet gives you full CRUD support for the Book Model
 
 class BookViewSet(viewsets.ModelViewSet):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+    queryset = Book.objects.all() # query all books
+    serializer_class = BookSerializer #use this serializer
+
+    # 🔐 Protect the endpoint so only logged-in users with valid tokens can access it
+    permission_classes = [IsAuthenticated]
