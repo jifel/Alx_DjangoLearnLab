@@ -2,7 +2,7 @@
 
 # DRF generic view classes and permission helpers
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 # local imports
 from .models import Book
