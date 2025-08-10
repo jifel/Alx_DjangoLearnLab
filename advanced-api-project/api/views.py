@@ -1,3 +1,75 @@
-from django.shortcuts import render
 
-# Create your views here.
+
+# DRF generic view classes and permission helpers
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
+# local imports
+from .models import Book
+from .serializers import BookSerializer
+
+# ----------------------------------------------------------------
+# ListView: GET /books/  -> returns list of all books
+# ----------------------------------------------------------------
+class BookListView(generics.ListAPIView):
+    """
+    List all Book instances.
+    GET only (returns a list). Anyone can read; writes are restricted.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    # Allow read for everyone, require authentication for write actions.
+    # (ListAPIView doesn't write, but we set this for consistency/readability.)
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+# ----------------------------------------------------------------
+# DetailView: GET /books/<pk>/  -> retrieve one book by id
+# ----------------------------------------------------------------
+class BookDetailView(generics.RetrieveAPIView):
+    """
+    Retrieve a single Book by primary key.
+    GET only.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+# ----------------------------------------------------------------
+# CreateView: POST /books/create/  -> create a new book
+# ----------------------------------------------------------------
+class BookCreateView(generics.CreateAPIView):
+    """
+    Create a new Book instance.
+    POST only. Requires authentication (because of IsAuthenticatedOrReadOnly).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+# ----------------------------------------------------------------
+# UpdateView: PUT/PATCH /books/<pk>/update/  -> update an existing book
+# ----------------------------------------------------------------
+class BookUpdateView(generics.UpdateAPIView):
+    """
+    Update an existing Book (PUT = full update, PATCH = partial update).
+    Requires authentication.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+# ----------------------------------------------------------------
+# DeleteView: DELETE /books/<pk>/delete/  -> delete a book
+# ----------------------------------------------------------------
+class BookDeleteView(generics.DestroyAPIView):
+    """
+    Delete a single Book instance.
+    Requires authentication.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
