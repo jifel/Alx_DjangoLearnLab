@@ -14,6 +14,9 @@ from django_filters import rest_framework #for the checker
 
 from django_filters.rest_framework import DjangoFilterBackend
 
+#for tests
+from rest_framework.test import APITestCase, APIClient
+
 # ----------------------------------------------------------------
 # ListView: GET /books/  -> returns list of all books
 # ----------------------------------------------------------------
