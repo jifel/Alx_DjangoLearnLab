@@ -10,6 +10,8 @@ from .serializers import BookSerializer
 
 #for filters
 from rest_framework import filters
+from django_filters import rest_framework #for the checker
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 # ----------------------------------------------------------------
