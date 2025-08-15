@@ -1,0 +1,36 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<h2>My Profile</h2>
+
+<!-- Display messages -->
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li style="color: green;">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<!-- Show current info -->
+<div style="margin-bottom: 20px;">
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>First name:</strong> {{ user.first_name }}</p>
+    <p><strong>Last name:</strong> {{ user.last_name }}</p>
+</div>
+
+<hr>
+
+<!-- Edit form -->
+<h3>Edit Profile</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update Profile</button>
+</form>
+
+{% endblock %}

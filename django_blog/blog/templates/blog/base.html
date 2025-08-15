@@ -20,6 +20,14 @@
     </header>
 
     <div class="content">
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li style="color: green;">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block content %}
         <!-- Page-specific content goes here -->
         {% endblock %}
