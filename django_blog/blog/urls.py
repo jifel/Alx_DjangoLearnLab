@@ -28,11 +28,11 @@ urlpatterns = [
     #path('profile/edit/', views.edit_profile_view, name='edit_profile'),
 
     #routes for CRUD operations
-    path('posts/', PostListView.as_view(), name='post-list'),                 # List all posts
-    path('posts/new/', PostCreateView.as_view(), name='post-create'),         # Create a new post
-    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),    # View single post
-    path('posts/<int:pk>/edit/', PostUpdateView.as_view(), name='post-update'),  # Edit a post
-    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'), # Delete a post
+   path("posts/", PostListView.as_view(), name="post-list"),
+    path("post/new/", PostCreateView.as_view(), name="post-create"),
+    path("post/<int:pk>/update/", PostUpdateView.as_view(), name="post-update"),
+    path("post/<int:pk>/delete/", PostDeleteView.as_view(), name="post-delete"),
+    path("post/<int:pk>/", PostDetailView.as_view(), name="post-detail"),
 ]
 
 
