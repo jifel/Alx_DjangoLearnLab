@@ -11,3 +11,21 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolute_url(self):
+
+        """
+        Returns the canonical URL for this Post instance.
+        Django uses this to know where the "detail page" of the object is.
+        """
+    # Import reverse here (instead of at the top of the file) 
+    # to avoid circular import issues with urls.py
+        from django.urls import reverse
+
+
+    # Use reverse() to look up the URL pattern named 'post-detail'
+    # and pass the current object's id as the argument.
+    # Example: if self.id = 7 and the URL pattern is:
+    # path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail')
+    # This will return "/posts/7/"
+        return reverse('post-detail', args=[str(self.id)])

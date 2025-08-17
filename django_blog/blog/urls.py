@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView
 
 
 urlpatterns = [
@@ -18,15 +19,20 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     #Route for posts
-    path('posts/', views.posts_view, name='posts'),
+    #path('posts/', views.posts_view, name='posts'),
 
     #route for profile
     path('profile/', views.profile_view, name='profile'),  # new profile URL
 
     #route for edit profile page
-    path('profile/edit/', views.edit_profile_view, name='edit_profile'),
+    #path('profile/edit/', views.edit_profile_view, name='edit_profile'),
 
-
+    #routes for CRUD operations
+    path('posts/', PostListView.as_view(), name='post-list'),                 # List all posts
+    path('posts/new/', PostCreateView.as_view(), name='post-create'),         # Create a new post
+    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),    # View single post
+    path('posts/<int:pk>/edit/', PostUpdateView.as_view(), name='post-update'),  # Edit a post
+    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'), # Delete a post
 ]
 
 
