@@ -1,7 +1,7 @@
 #adding a custom view because of the instruction and the extra email field added
 
 # Import render to display templates and redirect to send users to another URL
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 # Import messages framework to display success or error notifications
 from django.contrib import messages
@@ -86,10 +86,6 @@ def edit_profile_view(request):
 
 #combined profile_view & edit_profile_view
 
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .forms import ProfileForm
 
 @login_required
 def profile_view(request):
@@ -118,46 +114,24 @@ class PostListView(ListView):
 
 
 class PostDetailView(DetailView):
-    # Show a single post. Also lists its comments and accepts new comments via POST
 
     model = Post
     template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
 
     def get_context_data(self, **kwargs):
-        #add the existing comments  + a blank form to the context
-        ctx = super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         post = self.get_object()
-        ctx['comments'] = post.comments.select_related('author').order_by('-created_at')
-        ctx['comment_form'] = CommentForm
-        return ctx
 
-    def post(self, request, *args, **kwargs):
-        '''
-        handle 'add comment' submission on the same url
-        require login for posting
+        #all comments for this post
+        context['comments'] = Comment.objects.filter(post=post)
 
-        '''  
+        #empty form(submission handled by CommentCreateView)
+        context['comment_form'] = CommentForm
 
-        self.object = self.get_object() 
-        if not request.user.is_authenticated:
-            return redirect('login')
+        return context
 
-        #validate commentform and attach post+author before saving
-
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = self.object
-            comment.author = request.user
-            comment.save()
-            messages.success(request, "Comment added.")
-            return redirect(self.object.get_absolute_url()) #back to the post
-        
-
-        #if invalid, re-render the errors + existing comments
-        ctx =self.get_context_data(object=self.object)
-        ctx['comment_form'] = form
-        return self.render_to_response(ctx)
+    
 
 
 # Create a new post (only for logged-in users)
@@ -229,5 +203,75 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             #only the author of the comment can edit it
         return self.request.user == self.get_object().author
         
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    """
+    Handles creating a new comment.
+    Requires the user to be logged in (LoginRequiredMixin).
+    """
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        """
+        Before saving the comment:
+        - Attach the post being commented on (from URL pk).
+        - Attach the currently logged-in user as the author.
+        """
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.post = post
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """
+        After successfully creating a comment,
+        redirect back to the post detail page.
+        """
+        return self.object.post.get_absolute_url()
+
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Handles updating an existing comment.
+    Only the comment author can edit it.
+    """
+    model = Comment
+    form_class = CommentForm
+
+    def test_func(self):
+        """
+        Check that the logged-in user is the author of the comment.
+        If not, they can’t edit.
+        """
+        return self.request.user == self.get_object().author
+
+    def get_success_url(self):
+        """
+        After updating, redirect back to the post detail page.
+        """
+        return self.object.post.get_absolute_url()
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Handles deleting a comment.
+    Only the comment author can delete it.
+    """
+    model = Comment
+
+    def test_func(self):
+        """
+        Check that the logged-in user is the author of the comment.
+        If not, they can’t delete.
+        """
+        return self.request.user == self.get_object().author
+
+    def get_success_url(self):
+        """
+        After deleting, redirect back to the post detail page.
+        """
+        return self.object.post.get_absolute_url()
 
    
