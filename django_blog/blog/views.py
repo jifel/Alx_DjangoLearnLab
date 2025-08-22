@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 # Import the custom user creation form, profileform we built
-from .forms import CustomUserCreationForm, ProfileForm, PostForm
+from .forms import CustomUserCreationForm, ProfileForm, PostForm, CommentForm
 
 
 # This decorator ensures only logged-in users can access the view.
@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, Comment
 
 # This view handles user registration
 def register_view(request):
@@ -117,10 +117,47 @@ class PostListView(ListView):
     ordering = ['-published_date']  # newest first
 
 
-# Show a single post
 class PostDetailView(DetailView):
+    # Show a single post. Also lists its comments and accepts new comments via POST
+
     model = Post
     template_name = 'blog/post_detail.html'
+
+    def get_context_data(self, **kwargs):
+        #add the existing comments  + a blank form to the context
+        ctx = super().get_context_data(**kwargs)
+        post = self.get_object()
+        ctx['comments'] = post.comments.select_related('author').order_by('-created_at')
+        ctx['comment_form'] = CommentForm
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        '''
+        handle 'add comment' submission on the same url
+        require login for posting
+
+        '''  
+
+        self.object = self.get_object() 
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        #validate commentform and attach post+author before saving
+
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = self.object
+            comment.author = request.user
+            comment.save()
+            messages.success(request, "Comment added.")
+            return redirect(self.object.get_absolute_url()) #back to the post
+        
+
+        #if invalid, re-render the errors + existing comments
+        ctx =self.get_context_data(object=self.object)
+        ctx['comment_form'] = form
+        return self.render_to_response(ctx)
 
 
 # Create a new post (only for logged-in users)
@@ -158,3 +195,39 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+    
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+
+    #edit your own comment
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+
+    def get_success_url(self):
+        #after editing go back to the post the comment belongs to
+        return self.object.post.get_absolute_url()
+    
+    def test_func(self):
+        #only the author of the comment can edit it
+        return self.request.user == self.get_object().author
+    
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    
+        #delete your own comment (with confirmation)
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
+        
+    def test_func(self):
+            #only the author of the comment can edit it
+        return self.request.user == self.get_object().author
+        
+
+   
