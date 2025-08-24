@@ -26,3 +26,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    
+# 👇 Alias for checker compatibility
+CustomUser = User    
