@@ -323,3 +323,19 @@ class SearchResultsView(ListView):
                 Q(tags__name__icontains=query) # search in tags
             ).distinct()
         return Post.objects.none()  # return empty if no query
+    
+class PostByTagListView(ListView):
+    model = Post
+    template_name = "blog/posts_by_tag.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        # get the tag by slug
+        self.tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
+        # filter posts that contain this tag
+        return Post.objects.filter(tags__in=[self.tag]).order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tag"] = self.tag
+        return context    
