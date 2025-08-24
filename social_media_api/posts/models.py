@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from accounts.models import User
 
 User = settings.AUTH_USER_MODEL
 

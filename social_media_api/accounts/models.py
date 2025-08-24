@@ -14,6 +14,13 @@ class User(AbstractUser):
         blank=True
     )
 
+    followers = models.ManyToManyField(
+    'self',
+    symmetrical=False,
+    related_name='following',
+    blank=True
+)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']  # username still required, but login uses email
 
