@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post, Comment
+from taggit.forms import TagWidget 
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)  # Add email field
@@ -25,7 +26,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']  # Author will be set in the view, not user-editable
-
+        widgets = {
+            "tags": TagWidget(), #using TagWidget for better UX
+        }
     def clean_title(self):
         title = self.cleaned_data.get('title')
         if len(title) < 5:
