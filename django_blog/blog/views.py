@@ -18,6 +18,9 @@ from django.views.generic import ListView,DetailView,CreateView,UpdateView,Delet
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import Post, Comment
+from taggit.models import Tag
+from django.db.models import Q
+
 
 # This view handles user registration
 def register_view(request):
@@ -273,5 +276,50 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         After deleting, redirect back to the post detail page.
         """
         return self.object.post.get_absolute_url()
+    
 
-   
+
+def posts_by_tag(request, tag_name):
+    """
+    Show all posts that have the given name).
+    """
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = Post.objects.filter(tags__in=[tag]).order_by("-published_date")
+    return render(request, "blog/posts_by_tag.html", {"tag": tag, "posts": posts})
+
+def search_posts(request):
+    query = request.GET.get("q")  # get search term from ?q=...
+    posts = Post.objects.all()
+
+    if query:
+        posts = posts.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+    return render(request, "blog/search_results.html", {"posts": posts, "query": query})
+
+
+# #searchresult
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        """
+        This method returns posts that match the search query.
+        It searches by:
+        - title
+        - content
+        - tags (using taggit's 'name' field)
+        """
+        query = self.request.GET.get('q')  # get search term from ?q=...
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |   # search in title
+                Q(content__icontains=query) | # search in content
+                Q(tags__name__icontains=query) # search in tags
+            ).distinct()
+        return Post.objects.none()  # return empty if no query

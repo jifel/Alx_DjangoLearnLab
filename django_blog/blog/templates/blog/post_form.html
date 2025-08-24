@@ -6,6 +6,10 @@
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+
+    {# Optional UX hint if your form doesn't show help text #}
+    <p><small>Tip: Add multiple tags separated by commas (e.g., django, python).</small></p>
+
     <button type="submit">Save</button>
   </form>
 

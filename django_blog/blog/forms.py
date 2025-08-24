@@ -24,7 +24,7 @@ class ProfileForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']  # Author will be set in the view, not user-editable
+        fields = ['title', 'content', 'tags']  # Author will be set in the view, not user-editable
 
     def clean_title(self):
         title = self.cleaned_data.get('title')

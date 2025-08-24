@@ -6,6 +6,15 @@
   <p><small>By {{ object.author }} on {{ object.created_at }}</small></p>
 
   <hr>
+ <p><strong>Tags:</strong>
+    {% if post.tags.exists %}
+      {% for tag in post.tags.all %}
+        <a href="{% url 'posts_by_tag' tag.name %}" style="margin-right: 8px;">#{{ tag.name }}</a>
+      {% endfor %}
+    {% else %}
+      <em>No tags</em>
+    {% endif %}
+  </p>
 
   <h2>Comments</h2>
   {% for comment in object.comments.all %}
